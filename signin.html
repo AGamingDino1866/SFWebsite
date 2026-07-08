@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - Success Club 2026</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-shell">
+        <a class="brand" href="index.html"><span class="brand-mark">SC</span><span><strong>Success Club</strong><small>Student sign in</small></span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+        <div class="nav-links" id="nav-links">
+          <a href="index.html">Home</a><a href="status.html">Application Status</a><a href="scholarships.html">Scholarships</a><a href="signup.html">Sign Up</a><a class="active" href="signin.html">Sign In</a><a href="apply.html">Apply</a><a href="admin.html">Admin</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <section class="section">
+        <div class="account-grid">
+          <form class="auth-card" id="login-form">
+            <h3>Student sign in</h3>
+            <label>Email<input name="email" type="email" placeholder="student@gmail.com" required /></label>
+            <label>Password<input name="password" type="password" required /></label>
+            <button class="button primary full" type="submit">Sign In</button>
+            <button class="button secondary full" data-logout type="button">Sign Out</button>
+            <div class="success-message" id="login-message" role="status" aria-live="polite"></div>
+          </form>
+          <form class="auth-card" id="verify-form">
+            <h3>Verify email</h3>
+            <p class="admin-help">For this no-signup school demo, the backend shows a six-digit verification code after account creation and logs it in the terminal.</p>
+            <label>Verification code<input name="code" type="text" inputmode="numeric" maxlength="6" placeholder="123456" required /></label>
+            <button class="button primary full" type="submit">Verify Email</button>
+            <button class="button secondary full" id="resend-code-button" type="button">Generate New Code</button>
+            <div class="success-message" id="verify-message" role="status" aria-live="polite"></div>
+            <div class="success-message show" data-student-status>Not signed in.</div>
+          </form>
+        </div>
+      </section>
+    </main>
+    <footer><p>Need an account?</p><a href="signup.html">Create account</a></footer>
+    <script src="script.js"></script>
+  </body>
+</html>

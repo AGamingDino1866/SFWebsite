@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Success Club 2026</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Admin navigation">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">SC</span>
+          <span>
+            <strong>Admin Dashboard</strong>
+            <small>Success Club 2026</small>
+          </span>
+        </a>
+        <div class="nav-links admin-nav">
+          <a href="index.html">Student Site</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="admin-page">
+      <section class="section">
+        <div class="admin-layout">
+          <form class="auth-card" id="admin-login-form">
+            <p class="eyebrow">Admin Sign In</p>
+            <h1>Review scholarship applications</h1>
+            <p class="admin-help">
+              Demo admin account: <strong>admin@successclub2026.org</strong> / <strong>admin2026</strong>
+            </p>
+            <label>
+              Admin email
+              <input name="email" type="email" placeholder="admin@successclub2026.org" required />
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" placeholder="admin2026" required />
+            </label>
+            <button class="button primary full" type="submit">Open Dashboard</button>
+            <div class="success-message" id="admin-login-message" role="status" aria-live="polite"></div>
+          </form>
+
+          <section class="admin-dashboard" id="admin-dashboard" hidden>
+            <div class="dashboard-top">
+              <div>
+                <p class="eyebrow">Applications</p>
+                <h2>Student submissions</h2>
+                <p id="admin-count">No applications loaded yet.</p>
+              </div>
+              <div class="admin-actions">
+                <label>
+                  Sort applications
+                  <select id="application-sort">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="name">Student name</option>
+                    <option value="status">Status</option>
+                    <option value="city">City</option>
+                    <option value="program">Scholarship</option>
+                  </select>
+                </label>
+                <button class="button secondary" id="admin-logout-button" type="button">Sign Out</button>
+              </div>
+            </div>
+            <div class="applications-list" id="applications-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
