@@ -48,24 +48,26 @@ The website supports the idea of **UN Sustainable Development Goal 4: Quality Ed
 
 ```txt
 success-club-scholarship-portal/
-├── index.html
-├── scholarships.html
-├── signup.html
-├── signin.html
-├── apply.html
-├── status.html
-├── admin.html
-├── about.html
-├── contact.html
-├── styles.css
-├── script.js
-├── admin.js
-├── server.js
-├── package.json
-├── favicon.svg
-└── data/
-    ├── users.json
-    └── applications.json
+|-- index.html
+|-- scholarships.html
+|-- signup.html
+|-- signin.html
+|-- apply.html
+|-- status.html
+|-- admin.html
+|-- about.html
+|-- contact.html
+|-- styles.css
+|-- script.js
+|-- admin.js
+|-- server.js
+|-- package.json
+|-- start.bat
+|-- start.command
+|-- favicon.svg
+`-- data/
+    |-- users.json
+    `-- applications.json
 ```
 
 ## How To Run
@@ -82,6 +84,28 @@ Open the website in your browser:
 
 ```txt
 http://localhost:4173
+```
+
+The homepage is served as the default page, so both URLs work:
+
+```txt
+http://localhost:4173
+http://localhost:4173/index.html
+```
+
+### Quick Start Scripts
+
+Windows:
+
+```txt
+Double-click start.bat
+```
+
+macOS:
+
+```bash
+chmod +x start.command
+./start.command
 ```
 
 ## Admin Login

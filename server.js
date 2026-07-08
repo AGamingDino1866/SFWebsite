@@ -467,8 +467,15 @@ const handleApi = async (request, response, pathname) => {
 };
 
 const serveStatic = async (request, response, pathname) => {
-  const safePath = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[/\\])+/, "");
-  const filePath = path.join(ROOT, safePath === "/" ? "index.html" : safePath);
+  const requestedPath = pathname === "/" ? "index.html" : decodeURIComponent(pathname).replace(/^[/\\]+/, "");
+  const safePath = path.normalize(requestedPath);
+
+  if (path.isAbsolute(safePath) || safePath.startsWith("..")) {
+    response.writeHead(403);
+    return response.end("Forbidden");
+  }
+
+  const filePath = path.join(ROOT, safePath);
 
   if (!filePath.startsWith(ROOT)) {
     response.writeHead(403);
