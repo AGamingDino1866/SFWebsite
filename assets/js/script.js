@@ -132,6 +132,7 @@ const setupRegister = () => {
       const params = new URLSearchParams();
       if (data.demoVerificationCode) params.set("demoCode", data.demoVerificationCode);
       params.set("emailSent", String(Boolean(data.emailSent)));
+      params.set("emailConfigured", String(Boolean(data.emailConfigured)));
       window.location.href = `verify.html?${params.toString()}`;
     } catch (error) {
       showMessage("#register-message", error.message);
@@ -171,11 +172,17 @@ const setupVerifyEmail = () => {
   const params = new URLSearchParams(window.location.search);
   const demoCode = params.get("demoCode");
   const emailSent = params.get("emailSent") === "true";
+  const emailConfigured = params.get("emailConfigured") === "true";
 
   if (demoCode) {
     showMessage("#verify-message", `Email is not configured yet. Demo code: ${demoCode}`, true);
   } else if (emailSent) {
     showMessage("#verify-message", "We sent a verification code to your email.", true);
+  } else if (emailConfigured) {
+    showMessage(
+      "#verify-message",
+      "Gmail is configured, but the code could not be sent. Check the app password or SMTP access, then use Send New Code."
+    );
   }
 
   form.addEventListener("submit", async (event) => {

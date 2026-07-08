@@ -261,6 +261,8 @@ const sendMail = async ({ to, subject, text }) => {
 };
 
 const sendVerificationEmail = async (user) => {
+  if (!EMAIL_CONFIG) return { configured: false, sent: false };
+
   try {
     const sent = await sendMail({
       to: user.email,
@@ -277,10 +279,10 @@ Success Club 2026 Scholarship Portal`,
     });
 
     if (sent) console.log(`Verification email sent to ${user.email}`);
-    return sent;
+    return { configured: true, sent };
   } catch (error) {
     console.warn(`Verification email failed for ${user.email}: ${error.message}`);
-    return false;
+    return { configured: true, sent: false, error: error.message };
   }
 };
 
@@ -372,15 +374,18 @@ const handleApi = async (request, response, pathname) => {
     await writeJson(USERS_FILE, users);
 
     console.log(`Verification code for ${email}: ${verificationCode}`);
-    const emailSent = await sendVerificationEmail(user);
+    const emailResult = await sendVerificationEmail(user);
 
     return sendJson(response, 201, {
       token: createToken(user),
       user: publicUser(user),
-      demoVerificationCode: emailSent ? null : verificationCode,
-      emailSent,
-      message: emailSent
+      demoVerificationCode: emailResult.configured ? null : verificationCode,
+      emailConfigured: emailResult.configured,
+      emailSent: emailResult.sent,
+      message: emailResult.sent
         ? "Account created. Verification code sent to your email."
+        : emailResult.configured
+        ? "Account created, but Gmail could not send the verification email. Check the app password, network, or SMTP access."
         : "Account created. Email is not configured, so the demo verification code is shown locally.",
     });
   }
@@ -438,12 +443,15 @@ const handleApi = async (request, response, pathname) => {
     await writeJson(USERS_FILE, users);
 
     console.log(`Verification code for ${user.email}: ${user.verificationCode}`);
-    const emailSent = await sendVerificationEmail(user);
+    const emailResult = await sendVerificationEmail(user);
     return sendJson(response, 200, {
-      demoVerificationCode: emailSent ? null : user.verificationCode,
-      emailSent,
-      message: emailSent
+      demoVerificationCode: emailResult.configured ? null : user.verificationCode,
+      emailConfigured: emailResult.configured,
+      emailSent: emailResult.sent,
+      message: emailResult.sent
         ? "New verification code sent to your email."
+        : emailResult.configured
+        ? "Gmail could not send the new code. Check the app password, network, or SMTP access."
         : "Email is not configured, so the new demo code is shown locally.",
     });
   }
