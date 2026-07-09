@@ -18,8 +18,50 @@ Students work as product designers, web developers, and technology consultants t
 - Students click **My Applications**.
 - The site sends them to the official Google Form.
 - Google limits the form to one response per email.
-- Responses appear in the connected Google Sheet.
+- Responses appear in a private connected Google Sheet.
 - Admins use the hidden `admin.html` page to open the response sheet.
+
+## Frontend-Only Features
+
+The portal uses frontend-only features to make the site feel complete while keeping hosting simple and reliable.
+
+### Eligibility Checker
+
+A guided checker helps students understand which scholarship path may fit them before opening the application form. It can ask about grade level, city, school needs, and household income range, then point the student toward the correct application choice.
+
+### Application Checklist
+
+The application page includes a preparation checklist so students know what to gather before opening the form:
+
+- Active email address
+- Full name and city
+- Current school
+- Current grade
+- Guardian information
+- Household income range
+- Short personal statement
+
+### FAQ Section
+
+The FAQ section answers common student questions, including:
+
+- Can I submit more than once?
+- How do I check my application status?
+- Which email should I use?
+- When will the review team contact me?
+- What happens after I submit the form?
+
+### Application Timeline
+
+The student-facing flow is shown as a simple timeline:
+
+```txt
+Learn about scholarships -> Check eligibility -> Prepare documents -> Submit form -> Review -> Contact -> Final decision
+```
+
+### Form Launch Modal
+
+Before students leave the website, the form launch modal explains that they are opening the official Google Form and should use the correct email address. This keeps the transition clear and prevents confusion.
 
 ## Project Phases
 
@@ -139,12 +181,6 @@ Application form:
 https://forms.gle/LWNga2iSiBCWmFnD7
 ```
 
-Applications sheet:
-
-```txt
-https://docs.google.com/spreadsheets/d/1gqATBqOnFD4Z8mIuWubuKleWsQqpohmdXu4YwCaFo_4/edit?resourcekey=&gid=348710097#gid=348710097
-```
-
 Contact email:
 
 ```txt
@@ -153,7 +189,7 @@ successscholarships2026@gmail.com
 
 ## Admin Notes
 
-The admin page is intentionally hidden from the public menu. It links to the Google Sheet where submissions are reviewed.
+The admin page is intentionally hidden from the public menu. It links to the private Google Sheet where submissions are reviewed. The sheet URL is not listed in this README.
 
 For review tracking, add these columns in the Sheet:
 
