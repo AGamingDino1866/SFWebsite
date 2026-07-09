@@ -13,9 +13,10 @@ const firebaseConfig = {
 };
 
 const adminEmail = "successscholarships2026@gmail.com";
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig, "success-club-admin");
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
 const db = getFirestore(app);
 
 const adminLayout = document.querySelector("#admin-layout");
