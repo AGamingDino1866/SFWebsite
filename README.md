@@ -2,7 +2,7 @@
 
 A scholarship website for the **Success Club 2026 - SDG 4: Quality Education** project.
 
-The website helps underprivileged students learn about scholarship support, create an account, submit an in-site application, and check their application status.
+The website helps underprivileged students learn about scholarship support, sign in with Google, submit an in-site application, and check their application status.
 
 ## Website Pages
 
@@ -12,11 +12,11 @@ The homepage introduces the mission of the scholarship portal: helping underpriv
 
 ### My Applications
 
-The My Applications page is the main student action page. Students sign in, complete the built-in application form, use the eligibility checker, review the application checklist, and see the application timeline.
+The My Applications page is the main student action page. Students sign in with Google, complete the built-in application form, use the eligibility checker, review the application checklist, and see the application timeline.
 
 ### Sign In
 
-The Sign In page lets students create an account or sign in with email and password before submitting an application.
+The Sign In page lets students continue with Google before submitting an application.
 
 ### Resources
 
@@ -32,12 +32,12 @@ The contact page gives students a way to reach the scholarship team for help.
 
 ### Admin Page
 
-The admin page is hidden from the public menu. It lets the scholarship team sign in, review submitted applications, and update application statuses.
+The admin page is hidden from the public menu. The scholarship team signs in with the admin Google account to review submitted applications and update statuses.
 
 ## Student Flow
 
 ```txt
-Visit Home -> Sign In -> Open My Applications -> Submit application -> Save application ID -> Check status
+Visit Home -> Sign In with Google -> Open My Applications -> Submit application -> Save application ID -> Check status
 ```
 
 ## Contact Email
