@@ -20,7 +20,7 @@ The Resources page helps students prepare stronger applications with document ti
 
 ### Status
 
-The Status page uses the backend to let students check an application status with an email address or application ID.
+The Status page lets students check their application status with an application ID. Status records are stored in Firebase Firestore and updated by the scholarship team.
 
 ### Contact Us
 
@@ -48,32 +48,29 @@ https://forms.gle/LWNga2iSiBCWmFnD7
 successscholarships2026@gmail.com
 ```
 
-## Backend Setup
+## Status Lookup
 
-The backend uses Cloudflare Pages Functions and a Cloudflare D1 database.
-
-The status API lives at:
+Status lookup uses Firebase Firestore collection:
 
 ```txt
-/api/status
+application_status
 ```
 
-The database schema is in:
-
-```txt
-schema.sql
-```
-
-In Cloudflare, create a D1 database and bind it to the Pages project with this binding name:
-
-```txt
-DB
-```
-
-After the schema is applied, the demo lookup is:
+Each application status should use the application ID as the document ID, such as:
 
 ```txt
 SC2026-DEMO
+```
+
+Suggested fields:
+
+```txt
+application_id
+student_name
+city
+status
+message
+updated_at
 ```
 
 ## Project Theme
