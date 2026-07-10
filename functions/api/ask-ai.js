@@ -12,9 +12,8 @@ const siteContext = `Success Club 2026 scholarship portal context:
 - Audience: students and families preparing scholarship applications in Karachi, Lahore, Islamabad, or nearby areas.
 - Home page: introduces the program and its mission.
 - My Applications page: students sign in with Google, fill the built-in application form, and submit details including student name, city, grade, school, guardian contact, financial need, and academic goals.
-- Status page: students check application progress with their application ID.
-- Resources page: gives preparation guidance for scholarship applications.
 - Ask AI page: helps students write clearer application answers.
+- Status page: students check application progress with their application ID.
 - Contact page: official help email is successscholarships2026@gmail.com.
 - Admin page: hidden page for the scholarship team to review applications and update statuses.
 - AI Scholar cannot see submitted applications, cannot check live status, cannot approve/reject students, and cannot change admin records.`;
