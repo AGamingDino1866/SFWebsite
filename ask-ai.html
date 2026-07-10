@@ -18,7 +18,7 @@
       <section class="tip-grid"><article class="tip-card"><strong>Best for</strong><p>Essay wording, application preparation, scholarship goals, and explaining need clearly.</p></article><article class="tip-card"><strong>Not for</strong><p>Final admissions decisions, private account issues, or guaranteed scholarship results.</p></article><article class="tip-card"><strong>Privacy</strong><p>Keep personal documents, passwords, and sensitive numbers out of AI questions.</p></article></section>
     </main>
     <footer><p>Success Club 2026</p><a href="apply.html">My Applications</a></footer>
-    <script src="assets/js/script.js?v=ask-ai-1"></script>
+    <script src="assets/js/script.js?v=ask-ai-2"></script>
     <script>
       const form = document.querySelector('#ai-form');
       const question = document.querySelector('#ai-question');
@@ -36,6 +36,10 @@
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ message })
           });
+          const contentType = response.headers.get('content-type') || '';
+          if (!contentType.includes('application/json')) {
+            throw new Error('AI Scholar backend is not live yet. Redeploy Cloudflare Pages, then try again.');
+          }
           const payload = await response.json();
           if (!response.ok || !payload.ok) throw new Error(payload.error || 'AI Scholar is not available yet.');
           answer.textContent = payload.answer;
