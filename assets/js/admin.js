@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAw65XzclDbj2AUyHKlPKP0dufaoqpd8OY",
@@ -27,8 +27,22 @@ const adminDashboard = document.querySelector("#admin-dashboard");
 const adminLogoutButton = document.querySelector("#admin-logout-button");
 const applicationsList = document.querySelector("#applications-list");
 const refreshButton = document.querySelector("#refresh-button");
+const adminControls = document.querySelector("#admin-controls");
+const applicationSearch = document.querySelector("#application-search");
+const statusFilter = document.querySelector("#status-filter");
+const cityFilter = document.querySelector("#city-filter");
+const sortSelect = document.querySelector("#sort-select");
+const adminCount = document.querySelector("#admin-count");
+let allApplications = [];
 
 const escapeHtml = (value) => String(value || "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]));
+const normalize = (value) => String(value || "").toLowerCase().trim();
+const dateValue = (value) => {
+  if (!value) return 0;
+  if (typeof value.toDate === "function") return value.toDate().getTime();
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
 
 const showAdminMessage = (message, isSuccess = false) => {
   adminLoginMessage.classList.toggle("success", isSuccess);
@@ -47,9 +61,57 @@ const showLogin = () => {
   adminLayout.classList.remove("dashboard-open");
 };
 
-const renderApplications = (records) => {
+const updateCityFilter = (records) => {
+  const current = cityFilter.value;
+  const cities = [...new Set(records.map((record) => record.city).filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
+  cityFilter.innerHTML = '<option value="all">All cities</option>' + cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
+  if (cities.includes(current)) cityFilter.value = current;
+};
+
+const getVisibleApplications = () => {
+  const search = normalize(applicationSearch.value);
+  const status = statusFilter.value;
+  const city = cityFilter.value;
+  const sort = sortSelect.value;
+
+  const visible = allApplications.filter((record) => {
+    const searchText = normalize([
+      record.application_id,
+      record.student_name,
+      record.email,
+      record.city,
+      record.grade,
+      record.school,
+      record.guardian_name,
+      record.guardian_phone,
+      record.need_statement,
+      record.goals,
+      record.status
+    ].join(" "));
+    const matchesSearch = !search || searchText.includes(search);
+    const matchesStatus = status === "all" || record.status === status;
+    const matchesCity = city === "all" || record.city === city;
+    return matchesSearch && matchesStatus && matchesCity;
+  });
+
+  visible.sort((a, b) => {
+    if (sort === "created-asc") return dateValue(a.created_at) - dateValue(b.created_at);
+    if (sort === "name-asc") return String(a.student_name || "").localeCompare(String(b.student_name || ""));
+    if (sort === "name-desc") return String(b.student_name || "").localeCompare(String(a.student_name || ""));
+    if (sort === "city-asc") return String(a.city || "").localeCompare(String(b.city || ""));
+    if (sort === "status-asc") return String(a.status || "Received").localeCompare(String(b.status || "Received"));
+    return dateValue(b.created_at) - dateValue(a.created_at);
+  });
+
+  return visible;
+};
+
+const renderApplications = () => {
+  const records = getVisibleApplications();
+  adminCount.textContent = `${records.length} of ${allApplications.length} applications shown`;
+
   if (!records.length) {
-    applicationsList.innerHTML = '<p class="empty-state">No applications have been submitted yet.</p>';
+    applicationsList.innerHTML = '<p class="empty-state">No applications match the current search or filters.</p>';
     return;
   }
 
@@ -70,6 +132,7 @@ const renderApplications = (records) => {
         <select name="status"><option ${record.status === "Received" ? "selected" : ""}>Received</option><option ${record.status === "Under Review" ? "selected" : ""}>Under Review</option><option ${record.status === "Needs Info" ? "selected" : ""}>Needs Info</option><option ${record.status === "Approved" ? "selected" : ""}>Approved</option><option ${record.status === "Rejected" ? "selected" : ""}>Rejected</option></select>
         <input name="message" value="${escapeHtml(record.message || "Your application has been received and is waiting for review.")}" />
         <button class="button secondary" type="submit">Update Status</button>
+        <button class="danger-button" type="button" data-delete-application>Delete</button>
       </form>
     </article>
   `).join("");
@@ -77,9 +140,11 @@ const renderApplications = (records) => {
 
 const loadApplications = async () => {
   applicationsList.innerHTML = '<p class="empty-state">Loading applications...</p>';
+  adminCount.textContent = "Loading applications...";
   const snapshot = await getDocs(query(collection(db, "applications"), orderBy("created_at", "desc")));
-  const records = snapshot.docs.map((item) => item.data());
-  renderApplications(records);
+  allApplications = snapshot.docs.map((item) => item.data());
+  updateCityFilter(allApplications);
+  renderApplications();
 };
 
 adminGoogleButton.addEventListener("click", async () => {
@@ -118,6 +183,24 @@ applicationsList.addEventListener("submit", async (event) => {
   await loadApplications();
 });
 
+applicationsList.addEventListener("click", async (event) => {
+  const deleteButton = event.target.closest("[data-delete-application]");
+  if (!deleteButton) return;
+  const row = deleteButton.closest(".application-row");
+  const applicationId = row.dataset.id;
+  const student = row.dataset.student || "this applicant";
+  if (!window.confirm(`Delete ${student}'s application (${applicationId})? This also removes their status lookup.`)) return;
+  deleteButton.disabled = true;
+  deleteButton.textContent = "Deleting...";
+  await deleteDoc(doc(db, "applications", applicationId));
+  await deleteDoc(doc(db, "application_status", applicationId));
+  allApplications = allApplications.filter((record) => record.application_id !== applicationId);
+  updateCityFilter(allApplications);
+  renderApplications();
+});
+
+adminControls.addEventListener("input", renderApplications);
+adminControls.addEventListener("change", renderApplications);
 refreshButton.addEventListener("click", loadApplications);
 adminLogoutButton.addEventListener("click", () => signOut(auth));
 
