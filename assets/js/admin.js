@@ -82,13 +82,12 @@ const updateCityFilter = (records) => {
 
 const renderStats = () => {
   const statusCount = (status) => allApplications.filter((record) => (record.status || "Received") === status).length;
-  const documentCount = allApplications.reduce((sum, record) => sum + (record.documents?.length || 0), 0);
   statsGrid.innerHTML = [
     [allApplications.length, "total"],
     [statusCount("Received"), "received"],
     [statusCount("Under Review"), "under review"],
-    [statusCount("Approved"), "approved"],
-    [documentCount, "PDF documents"]
+    [statusCount("Needs Info"), "needs info"],
+    [statusCount("Approved"), "approved"]
   ].map(([count, label]) => `<div class="stat-card"><strong>${count}</strong><span>${label}</span></div>`).join("");
 };
 
@@ -112,10 +111,7 @@ const getVisibleApplications = () => {
       record.goals,
       record.status
     ].join(" "));
-    const matchesSearch = !search || searchText.includes(search);
-    const matchesStatus = status === "all" || record.status === status;
-    const matchesCity = city === "all" || record.city === city;
-    return matchesSearch && matchesStatus && matchesCity;
+    return (!search || searchText.includes(search)) && (status === "all" || record.status === status) && (city === "all" || record.city === city);
   });
 
   visible.sort((a, b) => {
@@ -130,7 +126,7 @@ const getVisibleApplications = () => {
   return visible;
 };
 
-const applicationText = (record) => `Success Club 2026 Application\n\nApplication ID: ${record.application_id || ""}\nStudent: ${record.student_name || ""}\nEmail: ${record.email || ""}\nCity: ${record.city || ""}\nGrade: ${record.grade || ""}\nSchool: ${record.school || ""}\nGuardian: ${record.guardian_name || ""} / ${record.guardian_phone || ""}\nStatus: ${record.status || "Received"}\n\nNeed:\n${record.need_statement || ""}\n\nGoals:\n${record.goals || ""}\n\nDocuments:\n${(record.documents || []).map((file, index) => `${index + 1}. ${file.name} - ${file.url}`).join("\n") || "No documents uploaded."}\n`;
+const applicationText = (record) => `Success Club 2026 Application\n\nApplication ID: ${record.application_id || ""}\nStudent: ${record.student_name || ""}\nEmail: ${record.email || ""}\nCity: ${record.city || ""}\nGrade: ${record.grade || ""}\nSchool: ${record.school || ""}\nGuardian: ${record.guardian_name || ""} / ${record.guardian_phone || ""}\nStatus: ${record.status || "Received"}\n\nNeed:\n${record.need_statement || ""}\n\nGoals:\n${record.goals || ""}\n`;
 
 const renderApplications = () => {
   const records = getVisibleApplications();
@@ -142,10 +138,7 @@ const renderApplications = () => {
     return;
   }
 
-  applicationsList.innerHTML = records.map((record) => {
-    const docs = record.documents || [];
-    const docHtml = docs.length ? `<div class="documents-box"><strong>Documents (${docs.length})</strong><div class="document-list">${docs.map((file, index) => `<button type="button" data-view-pdf="${escapeHtml(file.url)}">View ${index + 1}</button><a href="${escapeHtml(file.url)}" target="_blank" rel="noopener">Download ${index + 1}</a>`).join("")}</div><div class="pdf-viewer"><strong>PDF preview</strong><iframe title="PDF preview"></iframe></div></div>` : '<div class="documents-box"><strong>Documents</strong><span>No PDFs uploaded.</span></div>';
-    return `
+  applicationsList.innerHTML = records.map((record) => `
     <article class="application-row" data-id="${escapeHtml(record.application_id)}" data-city="${escapeHtml(record.city)}" data-student="${escapeHtml(record.student_name)}">
       <header><h2>${escapeHtml(record.student_name)}</h2><span class="pill">${escapeHtml(record.status || "Received")}</span></header>
       <div class="application-grid">
@@ -158,7 +151,6 @@ const renderApplications = () => {
         <div class="wide"><strong>Need</strong>${escapeHtml(record.need_statement)}</div>
         <div class="wide"><strong>Goals</strong>${escapeHtml(record.goals)}</div>
       </div>
-      ${docHtml}
       <form class="status-editor">
         <select name="status"><option ${record.status === "Received" ? "selected" : ""}>Received</option><option ${record.status === "Under Review" ? "selected" : ""}>Under Review</option><option ${record.status === "Needs Info" ? "selected" : ""}>Needs Info</option><option ${record.status === "Approved" ? "selected" : ""}>Approved</option><option ${record.status === "Rejected" ? "selected" : ""}>Rejected</option></select>
         <input name="message" value="${escapeHtml(record.message || "Your application has been received and is waiting for review.")}" />
@@ -167,8 +159,7 @@ const renderApplications = () => {
         <button class="danger-button" type="button" data-delete-application>Delete</button>
       </form>
     </article>
-  `;
-  }).join("");
+  `).join("");
 };
 
 const loadApplications = async () => {
@@ -222,17 +213,7 @@ applicationsList.addEventListener("click", async (event) => {
   const applicationId = row.dataset.id;
   const record = allApplications.find((item) => item.application_id === applicationId);
 
-  const viewButton = event.target.closest("[data-view-pdf]");
-  if (viewButton) {
-    const viewer = row.querySelector(".pdf-viewer");
-    const iframe = viewer.querySelector("iframe");
-    iframe.src = viewButton.dataset.viewPdf;
-    viewer.classList.add("show");
-    return;
-  }
-
-  const downloadButton = event.target.closest("[data-download-application]");
-  if (downloadButton && record) {
+  if (event.target.closest("[data-download-application]") && record) {
     downloadText(`${applicationId || "application"}.txt`, applicationText(record));
     return;
   }
@@ -252,8 +233,8 @@ applicationsList.addEventListener("click", async (event) => {
 
 exportCsvButton.addEventListener("click", () => {
   const rows = getVisibleApplications();
-  const header = ["Application ID", "Student", "Email", "City", "Grade", "School", "Guardian", "Guardian Phone", "Status", "Documents", "Need", "Goals"];
-  const lines = [header.map(csv).join(",")].concat(rows.map((record) => [record.application_id, record.student_name, record.email, record.city, record.grade, record.school, record.guardian_name, record.guardian_phone, record.status || "Received", record.documents?.length || 0, record.need_statement, record.goals].map(csv).join(",")));
+  const header = ["Application ID", "Student", "Email", "City", "Grade", "School", "Guardian", "Guardian Phone", "Status", "Need", "Goals"];
+  const lines = [header.map(csv).join(",")].concat(rows.map((record) => [record.application_id, record.student_name, record.email, record.city, record.grade, record.school, record.guardian_name, record.guardian_phone, record.status || "Received", record.need_statement, record.goals].map(csv).join(",")));
   downloadText("success-club-applications.csv", lines.join("\n"), "text/csv");
 });
 
