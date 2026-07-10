@@ -7,6 +7,27 @@ const json = (body, status = 200) =>
     }
   });
 
+const ipUsage = new Map();
+const IP_DAILY_LIMIT = 150;
+
+const todayKey = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Karachi" }).format(new Date());
+const getClientIp = (request) => request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+const reserveIpMessage = (request) => {
+  const ip = getClientIp(request);
+  const key = `${todayKey()}:${ip}`;
+  const current = ipUsage.get(key) || 0;
+  if (current >= IP_DAILY_LIMIT) return false;
+  ipUsage.set(key, current + 1);
+
+  if (ipUsage.size > 2000) {
+    for (const storedKey of ipUsage.keys()) {
+      if (!storedKey.startsWith(`${todayKey()}:`)) ipUsage.delete(storedKey);
+    }
+  }
+
+  return true;
+};
+
 const siteContext = `Success Club 2026 scholarship portal context:
 - Purpose: help underprivileged students continue their education through a merit-based scholarship effort aligned with SDG 4 Quality Education.
 - Audience: students and families preparing scholarship applications in Karachi, Lahore, Islamabad, or nearby areas.
@@ -39,6 +60,10 @@ export async function onRequestPost(context) {
 
   if (!request.headers.get("x-firebase-token")) {
     return json({ ok: false, error: "Please sign in with Google before using AI Scholar." }, 401);
+  }
+
+  if (!reserveIpMessage(request)) {
+    return json({ ok: false, error: "Too many AI Scholar messages from this network today. Please try again tomorrow." }, 429);
   }
 
   let body;
