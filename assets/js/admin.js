@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -171,22 +171,16 @@ const loadApplications = async () => {
   renderApplications();
 };
 
-getRedirectResult(auth).then(async (result) => {
-  if (!result?.user) return;
-  if (result.user.email.toLowerCase() !== adminEmail) {
-    await signOut(auth);
-    showAdminMessage("That Google account is not the admin account.");
-    return;
-  }
-  showAdminMessage("Signed in.", true);
-}).catch((error) => {
-  showAdminMessage(error.message.replace("Firebase: ", ""));
-});
-
 adminGoogleButton.addEventListener("click", async () => {
   showAdminMessage("Opening Google sign-in...");
   try {
-    await signInWithRedirect(auth, provider);
+    const credential = await signInWithPopup(auth, provider);
+    if (credential.user.email.toLowerCase() !== adminEmail) {
+      await signOut(auth);
+      showAdminMessage("That Google account is not the admin account.");
+      return;
+    }
+    showAdminMessage("Signed in.", true);
   } catch (error) {
     showAdminMessage(error.message.replace("Firebase: ", ""));
   }
