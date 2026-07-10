@@ -18,17 +18,13 @@ The My Applications page is where students apply. Students sign in with Google a
 
 The Ask AI page gives students an AI Scholar helper for application preparation, goal wording, essay guidance, and respectful financial need explanations.
 
-### Sign In
-
-The Sign In page lets students continue with Google. It also includes a sign-out option so students can switch Google accounts if needed.
-
-### Resources
-
-The Resources page helps students prepare stronger applications with document tips, writing guidance, a prep tracker, and university research prompts.
-
 ### Status
 
 The Status page lets students check an application update using the application ID shown after submission.
+
+### Sign In
+
+The Sign In page lets students continue with Google. It also includes a sign-out option so students can switch Google accounts if needed.
 
 ### Contact Us
 
@@ -53,7 +49,6 @@ Ask AI Scholar
 Application status lookup
 Admin review dashboard
 Status update controls
-Student resources page
 Contact page
 ```
 
