@@ -40,8 +40,13 @@ const siteContext = `Success Club 2026 scholarship portal context:
 - AI Scholar cannot see submitted applications, cannot check live status, cannot approve/reject students, and cannot change admin records.`;
 
 const systemPrompt = `You are AI Scholar for the Success Club 2026 scholarship portal.
-Use only the website context below and the student's question.
+Use only the website context below, the recent conversation, and the student's latest question.
 ${siteContext}
+
+Conversation memory rules:
+- Use the recent chat history to understand follow-up questions, pronouns, drafts, and what the student already asked.
+- Do not claim memory outside the provided recent chat history.
+- If the student asks to continue or revise something, use the most relevant previous message from the recent chat.
 
 Scope rules:
 - Answer only questions related to Success Club 2026, scholarship applications, education goals, financial-need wording, application preparation, status wording, documents, contacting the program, or using this website.
@@ -50,6 +55,18 @@ Scope rules:
 - Do not promise approval, invent official decisions, claim to check live records, or ask for passwords, ID numbers, bank details, or sensitive documents.
 - Keep answers warm, concise, practical, and student-friendly.
 - If official help is needed, tell them to contact successscholarships2026@gmail.com.`;
+
+const cleanHistory = (history) => {
+  if (!Array.isArray(history)) return [];
+  return history
+    .slice(-12)
+    .map((item) => {
+      const role = item?.role === "assistant" || item?.role === "ai" ? "assistant" : item?.role === "user" ? "user" : null;
+      const content = String(item?.content || item?.text || "").trim().slice(0, 1200);
+      return role && content ? { role, content } : null;
+    })
+    .filter(Boolean);
+};
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -77,6 +94,8 @@ export async function onRequestPost(context) {
   if (!message) return json({ ok: false, error: "Ask a question first." }, 400);
   if (message.length > 1200) return json({ ok: false, error: "Please keep questions under 1200 characters." }, 400);
 
+  const history = cleanHistory(body.history).filter((item, index, list) => index < list.length - 1 || item.content !== message);
+
   const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -87,6 +106,7 @@ export async function onRequestPost(context) {
       model: env.GROQ_MODEL || "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
+        ...history,
         { role: "user", content: message }
       ],
       temperature: 0.2,
