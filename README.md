@@ -2,7 +2,7 @@
 
 A scholarship website for the **Success Club 2026 - SDG 4: Quality Education** project.
 
-The website helps underprivileged students learn about scholarship support, sign in with Google, submit an application inside the site, and check their application status later.
+The website helps underprivileged students learn about scholarship support, sign in with Google, submit an application inside the site, ask AI Scholar for application guidance, and check their application status later.
 
 ## Website Pages
 
@@ -12,7 +12,11 @@ The homepage introduces the scholarship mission: helping underprivileged student
 
 ### My Applications
 
-The My Applications page is where students apply. It includes Google sign-in, the built-in application form, an eligibility checker, an application checklist, the review timeline, and an expanded FAQ section.
+The My Applications page is where students apply. Students sign in with Google and submit the built-in application form.
+
+### Ask AI
+
+The Ask AI page gives students an AI Scholar helper for application preparation, goal wording, essay guidance, and respectful financial need explanations.
 
 ### Sign In
 
@@ -20,7 +24,7 @@ The Sign In page lets students continue with Google. It also includes a sign-out
 
 ### Resources
 
-The Resources page helps students prepare stronger applications with document tips, essay guidance, a prep tracker, and university research prompts.
+The Resources page helps students prepare stronger applications with document tips, writing guidance, a prep tracker, and university research prompts.
 
 ### Status
 
@@ -37,7 +41,7 @@ The admin page is hidden from public navigation. The scholarship team can sign i
 ## Student Flow
 
 ```txt
-Visit Home -> Sign In with Google -> Open My Applications -> Submit application -> Save application ID -> Check status
+Visit Home -> Sign In with Google -> Open My Applications -> Submit application -> Save application ID -> Ask AI if needed -> Check status
 ```
 
 ## Main Features
@@ -45,32 +49,12 @@ Visit Home -> Sign In with Google -> Open My Applications -> Submit application 
 ```txt
 Built-in application form
 Google sign-in
+Ask AI Scholar
 Application status lookup
 Admin review dashboard
 Status update controls
-Eligibility checker
-Application checklist
-Application timeline
-Expanded FAQ
 Student resources page
 Contact page
-```
-
-## FAQ Topics Covered
-
-```txt
-How to apply
-Why Google sign-in is used
-How to find application status
-What to do if the application ID is lost
-How corrections work
-Who can view applications
-What each status means
-What Needs Info means
-What details to prepare
-Supported cities
-Guardian submissions
-Switching Google accounts
 ```
 
 ## Contact Email
