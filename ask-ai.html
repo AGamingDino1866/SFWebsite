@@ -18,7 +18,7 @@
       <section class="tip-grid"><article class="tip-card"><strong>Best for</strong><p>Essay wording, application preparation, scholarship goals, and explaining need clearly.</p></article><article class="tip-card"><strong>Saved locally</strong><p>Chats are saved on this device only. They are not stored in Firebase.</p></article><article class="tip-card"><strong>Privacy</strong><p>Keep personal documents, passwords, and sensitive numbers out of AI questions.</p></article></section>
     </main>
     <footer><p>Success Club 2026</p><a href="apply.html">My Applications</a></footer>
-    <script src="assets/js/script.js?v=ask-ai-local-chats-1"></script>
+    <script src="assets/js/script.js?v=ask-ai-memory-1"></script>
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
       import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -53,6 +53,7 @@
       const writeChats = (chats) => localStorage.setItem(storageKey, JSON.stringify(chats.slice(0, 20)));
       const makeChat = () => ({ id: crypto.randomUUID(), title: 'New AI Scholar chat', createdAt: Date.now(), updatedAt: Date.now(), messages: [{ role: 'ai', text: welcomeMessage }] });
       const getCurrentChat = () => readChats().find((chat) => chat.id === currentChatId);
+      const getRecentHistory = () => (getCurrentChat()?.messages || []).filter((item) => item.text !== welcomeMessage).slice(-12).map((item) => ({ role: item.role === 'ai' ? 'assistant' : 'user', content: item.text }));
       const saveCurrentChat = (updater) => {
         const chats = readChats();
         const index = chats.findIndex((chat) => chat.id === currentChatId);
@@ -177,7 +178,7 @@
           const response = await fetch('/api/ask-ai', {
             method: 'POST',
             headers: { 'content-type': 'application/json', 'x-firebase-token': token },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message, history: getRecentHistory() })
           });
           const contentType = response.headers.get('content-type') || '';
           if (!contentType.includes('application/json')) {
