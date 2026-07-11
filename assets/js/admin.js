@@ -55,24 +55,6 @@ const downloadText = (filename, text, type = "text/plain") => {
   link.click();
   URL.revokeObjectURL(url);
 };
-const sendStatusEmail = async (record, status, message) => {
-  if (!record?.email) return { ok: false, error: "Applicant email missing." };
-  const response = await fetch("/api/send-confirmation", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      email_type: "status_update",
-      email: record.email,
-      student_name: record.student_name,
-      application_id: record.application_id,
-      status,
-      message
-    })
-  });
-  const result = await response.json().catch(() => ({ ok: false, error: "Email service returned an unreadable response." }));
-  if (!response.ok || !result.ok) throw new Error(result.error || "Status email could not be sent.");
-  return result;
-};
 
 const showAdminMessage = (message, isSuccess = false) => {
   adminLoginMessage.classList.toggle("success", isSuccess);
@@ -213,12 +195,10 @@ applicationsList.addEventListener("submit", async (event) => {
   event.preventDefault();
   const row = form.closest(".application-row");
   const applicationId = row.dataset.id;
-  const record = allApplications.find((item) => item.application_id === applicationId);
   const data = new FormData(form);
   const status = String(data.get("status") || "Received");
   const message = String(data.get("message") || "");
   const adminNotes = String(data.get("admin_notes") || "");
-  const previousStatus = record?.status || "Received";
   const submitButton = form.querySelector('button[type="submit"]');
   submitButton.disabled = true;
   submitButton.textContent = "Updating...";
@@ -231,13 +211,6 @@ applicationsList.addEventListener("submit", async (event) => {
     message,
     updated_at: new Date().toISOString().slice(0, 10)
   }, { merge: true });
-  if (record && (status !== previousStatus || message !== (record.message || ""))) {
-    try {
-      await sendStatusEmail(record, status, message);
-    } catch (error) {
-      window.alert(`Status saved, but email failed: ${error.message}`);
-    }
-  }
   await loadApplications();
 });
 
