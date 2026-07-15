@@ -1,22 +1,35 @@
+const detectVisitorCountry = async () => {
+  const lookupUrls = [
+    `https://ipapi.co/json/?t=${Date.now()}`,
+    `https://ipwho.is/?t=${Date.now()}`
+  ];
+
+  for (const url of lookupUrls) {
+    try {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 4500);
+      const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+      window.clearTimeout(timeout);
+      if (!response.ok) continue;
+      const data = await response.json();
+      const country = String(data.country_code || data.country || data.countryCode || "").toUpperCase();
+      if (country) return country;
+    } catch (error) {
+      // Try the next provider before deciding.
+    }
+  }
+
+  return "";
+};
+
 const enforcePakistanOnlyAccess = async () => {
   const allowedCountry = "PK";
   const denyPath = "/deny.html";
 
   if (window.location.pathname.endsWith("/deny.html")) return;
 
-  try {
-    const response = await fetch("https://ipapi.co/json/", { cache: "no-store" });
-    if (!response.ok) {
-      window.location.replace(denyPath);
-      return;
-    }
-
-    const data = await response.json();
-    const country = String(data.country_code || data.country || "").toUpperCase();
-    if (country !== allowedCountry) window.location.replace(denyPath);
-  } catch (error) {
-    window.location.replace(denyPath);
-  }
+  const country = await detectVisitorCountry();
+  if (country && country !== allowedCountry) window.location.replace(denyPath);
 };
 
 enforcePakistanOnlyAccess();
@@ -47,6 +60,7 @@ const setupNavigation = () => {
     const links = [
       ["index.html", "Home"],
       ["apply.html", "Apply"],
+      ["eligibility.html", "Eligibility"],
       ["ask-ai.html", "Ask AI"],
       ["status.html", "Status"],
       ["auth.html", "Sign In"],
