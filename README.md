@@ -36,7 +36,7 @@ Students should apply on the website first. Any required PDF documents should be
 - Eligibility page with simple income and document guidance.
 - Ask AI page for short application help.
 - Admin dashboard for reviewing applications, updating statuses, exporting CSV, downloading records, and deleting entries.
-- Pakistan-only geoblock code exists but is currently disabled in `assets/js/geoblock.js` / `assets/js/script.js`.
+- Pakistan-only geoblock is enabled through Cloudflare Pages middleware and the browser fallback in `assets/js/geoblock.js` / `assets/js/script.js`.
 
 ## Admin
 
@@ -132,9 +132,9 @@ Cloudflare environment variables may be required depending on the current email 
 - `auth.html` - Google sign-in
 - `contact.html` - contact page
 - `admin.html` - admin dashboard
-- `assets/js/script.js` - shared public behavior, navigation, runtime branding, disabled geoblock helper
+- `assets/js/script.js` - shared public behavior, navigation, runtime branding, geoblock fallback
 - `assets/js/admin.js` - admin dashboard logic
-- `assets/js/geoblock.js` - geoblock code, currently disabled
+- `assets/js/geoblock.js` - geoblock browser fallback, currently enabled
 - `functions/api/ask-ai.js` - AI backend
 - `functions/api/send-confirmation.js` - confirmation email backend
 - `favicon.svg` - Sahulat Family transparent favicon/logo mark
