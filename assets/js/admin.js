@@ -12,8 +12,8 @@ const firebaseConfig = {
   measurementId: "G-7X02YSZCZ0"
 };
 
-const adminEmail = "successscholarships2026@gmail.com";
-const app = initializeApp(firebaseConfig, "success-club-admin");
+const adminEmail = "sahulatfamilypk@gmail.com";
+const app = initializeApp(firebaseConfig, "sahulat-family-admin");
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
@@ -127,7 +127,7 @@ const getVisibleApplications = () => {
   return visible;
 };
 
-const applicationText = (record) => `Success Club 2026 Application\n\nApplication ID: ${record.application_id || ""}\nStudent: ${record.student_name || ""}\nEmail: ${record.email || ""}\nCity: ${record.city || ""}\nGrade: ${record.grade || ""}\nSchool: ${record.school || ""}\nGuardian: ${record.guardian_name || ""} / ${record.guardian_phone || ""}\nStatus: ${record.status || "Received"}\n\nNeed:\n${record.need_statement || ""}\n\nGoals:\n${record.goals || ""}\n\nAdmin notes:\n${record.admin_notes || ""}\n`;
+const applicationText = (record) => `Sahulat Family Application\n\nApplication ID: ${record.application_id || ""}\nStudent: ${record.student_name || ""}\nEmail: ${record.email || ""}\nCity: ${record.city || ""}\nGrade: ${record.grade || ""}\nSchool: ${record.school || ""}\nGuardian: ${record.guardian_name || ""} / ${record.guardian_phone || ""}\nStatus: ${record.status || "Received"}\n\nNeed:\n${record.need_statement || ""}\n\nGoals:\n${record.goals || ""}\n\nAdmin notes:\n${record.admin_notes || ""}\n`;
 
 const renderApplications = () => {
   const records = getVisibleApplications();
@@ -154,7 +154,7 @@ const renderApplications = () => {
         <div class="wide"><strong>Admin notes</strong>${escapeHtml(record.admin_notes || "No internal notes yet.")}</div>
       </div>
       <form class="status-editor">
-        <textarea name="admin_notes" placeholder="Internal admin notes. Not visible to students." style="grid-column:1/-1;min-height:86px;width:100%;padding:12px;border:1px solid rgba(23,61,49,.14);border-radius:10px;font:inherit;resize:vertical;">${escapeHtml(record.admin_notes || "")}</textarea>
+        <textarea name="admin_notes" placeholder="Internal admin notes. Not visible to students." style="grid-column:1/-1;min-height:86px;width:100%;padding:12px;border:1px solid rgba(52,76,132,.14);border-radius:10px;font:inherit;resize:vertical;">${escapeHtml(record.admin_notes || "")}</textarea>
         <select name="status"><option ${record.status === "Received" ? "selected" : ""}>Received</option><option ${record.status === "Under Review" ? "selected" : ""}>Under Review</option><option ${record.status === "Needs Info" ? "selected" : ""}>Needs Info</option><option ${record.status === "Approved" ? "selected" : ""}>Approved</option><option ${record.status === "Rejected" ? "selected" : ""}>Rejected</option></select>
         <input name="message" value="${escapeHtml(record.message || "Your application has been received and is waiting for review.")}" />
         <button class="button secondary" type="submit">Update Status</button>
@@ -242,7 +242,7 @@ exportCsvButton.addEventListener("click", () => {
   const rows = getVisibleApplications();
   const header = ["Application ID", "Student", "Email", "City", "Grade", "School", "Guardian", "Guardian Phone", "Status", "Admin Notes", "Need", "Goals"];
   const lines = [header.map(csv).join(",")].concat(rows.map((record) => [record.application_id, record.student_name, record.email, record.city, record.grade, record.school, record.guardian_name, record.guardian_phone, record.status || "Received", record.admin_notes || "", record.need_statement, record.goals].map(csv).join(",")));
-  downloadText("success-club-applications.csv", lines.join("\n"), "text/csv");
+  downloadText("sahulat-family-applications.csv", lines.join("\n"), "text/csv");
 });
 
 adminControls.addEventListener("input", renderApplications);
