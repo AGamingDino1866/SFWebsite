@@ -1,4 +1,4 @@
-const emailScriptUrl = "https://script.google.com/macros/s/AKfycbz6PcwaGjC1cmeRIKgra5bJL-2k3ZH-8Ing_fWBwbDEjcNgRS_x0vIBdDKKpZuD9HUt/exec";
+const emailScriptUrl = "https://script.google.com/macros/s/AKfycbw_h2c0Yc5MXJ4psqJPHRouBkbSYArRRVZwnk2f0QbRB1jrZCYNLRVNOCEsNN4C4W6D/exec";
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
