@@ -1,10 +1,10 @@
-const GEO_BLOCK_ENABLED = false;
+const GEO_BLOCK_ENABLED = true;
 const COUNTRY_ALLOWLIST = new Set(["PK"]);
 const PUBLIC_PATHS = new Set(["/deny.html", "/favicon.svg"]);
 
 export async function onRequest(context) {
   const { request, next } = context;
-  // Flip GEO_BLOCK_ENABLED to true if Pakistan-only access is approved again.
+  // Flip GEO_BLOCK_ENABLED to false if Pakistan-only access needs to be paused.
   if (!GEO_BLOCK_ENABLED) return next();
 
   const url = new URL(request.url);
