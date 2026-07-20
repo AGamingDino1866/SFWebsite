@@ -22,6 +22,17 @@
 - **Deployment:** Cloudflare Pages
 - **Status:** Live at https://successscholarships.pages.dev
 
+## ⚠️ IMPORTANT: Git Workflow
+
+**ALWAYS push directly to `main` branch.** Do NOT create feature branches or push to other branches.
+
+- All commits go to `main`
+- All changes pushed immediately to `main`
+- No separate feature branches
+- No intermediate branches for pull requests
+
+This is the only way to work on this repo.
+
 ## File Structure
 
 ```
