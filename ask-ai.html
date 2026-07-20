@@ -15,9 +15,9 @@
   <body>
     <header class="site-header centered-header"><nav class="nav-shell centered-nav" aria-label="Main navigation"><a class="brand compact-brand logo-only" href="index.html" aria-label="Sahulat Family home"><span class="brand-mark" aria-hidden="true"></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button><div class="nav-links" id="nav-links"><a href="index.html">Home</a><a href="apply.html">My Applications</a><a class="active" href="ask-ai.html">Ask AI</a><a href="status.html">Status</a><a href="auth.html">Sign In</a><a href="contact.html">Contact Us</a></div></nav></header>
     <main class="ai-shell">
-      <section class="ai-banner"><div><p class="eyebrow">Ask AI</p><h1>Get short help with your application.</h1><p>Ask about the form, documents, goals, need statement, or status wording. AI only helps with Sahulat Family.</p></div><div class="banner-controls"><div class="limit-pill" aria-live="polite"><span id="messages-left">50</span><small>left today</small></div><div class="ai-account"><span id="ai-account-state">Checking Google sign-in...</span><div class="account-actions"><button class="button" id="ai-signin" type="button">Sign in with Google</button><button class="button secondary" id="ai-signout" type="button" hidden>Sign out</button></div></div></div></section>
-      <section class="ai-panel"><div class="chat-tools"><label>Chats<select id="chat-select"></select></label><button class="button secondary" id="new-chat" type="button">New chat</button><button class="button secondary" id="delete-chat" type="button">Delete chat</button></div><div class="chat-window" id="chat-window" aria-live="polite"></div><form class="ai-form" id="ai-form"><label>Your message<textarea id="ai-question" maxlength="1200" placeholder="Ask a short question about your application, documents, goals, or status." required></textarea></label><button class="button" id="ask-button" type="submit">Send</button></form></section>
-      <section class="tip-grid"><article class="tip-card"><strong>Best for</strong><p>Short help with goals, need statements, documents, and form wording.</p></article><article class="tip-card"><strong>Saved here</strong><p>Chats stay on this device only.</p></article><article class="tip-card"><strong>Privacy</strong><p>Do not share passwords, CNIC numbers, or private documents.</p></article></section>
+      <section class="ai-banner"><div><p class="eyebrow">Ask AI</p><h1>Get AI help for your form.</h1><p>Ask about filling out the form, your papers, goals, why you need help, or status. AI only helps with Sahulat Family.</p></div><div class="banner-controls"><div class="limit-pill" aria-live="polite"><span id="messages-left">50</span><small>left</small></div><div class="ai-account"><span id="ai-account-state">Checking sign-in...</span><div class="account-actions"><button class="button" id="ai-signin" type="button">Sign in with Google</button><button class="button secondary" id="ai-signout" type="button" hidden>Sign out</button></div></div></div></section>
+      <section class="ai-panel"><div class="chat-tools"><label>Chats<select id="chat-select"></select></label><button class="button secondary" id="new-chat" type="button">New chat</button><button class="button secondary" id="delete-chat" type="button">Delete chat</button></div><div class="chat-window" id="chat-window" aria-live="polite"></div><form class="ai-form" id="ai-form"><label>Your question<textarea id="ai-question" maxlength="1200" placeholder="Ask about your form, papers, goals, or status." required></textarea></label><button class="button" id="ask-button" type="submit">Send</button></form></section>
+      <section class="tip-grid"><article class="tip-card"><strong>Good for</strong><p>Help with goals, why you need money, papers, and how to write.</p></article><article class="tip-card"><strong>Saved here</strong><p>Chats only stay on your device.</p></article><article class="tip-card"><strong>Be safe</strong><p>Do not share passwords, CNIC numbers, or private papers.</p></article></section>
     </main>
     <footer><p>Sahulat Family</p><a href="apply.html">My Applications</a></footer>
     <script src="assets/js/script.js?v=sahulat-ai-unlimited-1"></script>
@@ -49,7 +49,7 @@
       const unlimitedAiEmail = 'sahulatfamilypk@gmail.com';
       const hasUnlimitedAi = (user) => String(user?.email || '').trim().toLowerCase() === unlimitedAiEmail;
 
-      const welcomeMessage = 'Hi, I am Sahulat AI. Ask me a short question about your application.';
+      const welcomeMessage = 'Hi, I am Sahulat AI. Ask me a question about your form.';
       const storageKey = 'successFactorAiChats:v1';
       const todayKey = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Karachi' }).format(new Date());
       const usageDoc = (user) => doc(db, 'ai_usage', `${user.uid}_${todayKey()}`);
@@ -129,7 +129,7 @@
           const ref = usageDoc(user);
           const snap = await transaction.get(ref);
           const count = snap.exists() ? Number(snap.data().count || 0) : 0;
-          if (count >= 50) throw new Error('You used today\'s AI limit. Try again tomorrow.');
+          if (count >= 50) throw new Error('You used all your questions for today. Come back tomorrow.');
           const nextCount = count + 1;
           transaction.set(ref, { uid: user.uid, email: user.email, date: todayKey(), count: nextCount, updated_at: serverTimestamp() }, { merge: true });
           return 50 - nextCount;
@@ -160,7 +160,7 @@
           accountState.textContent = `Signed in as ${user.email}`;
           await refreshCounter(user);
         } else {
-          accountState.textContent = 'Sign in with Google to use Ask AI.';
+          accountState.textContent = 'Sign in to use AI help.';
           setLeft(50);
         }
       });
@@ -170,7 +170,7 @@
         const message = question.value.trim();
         if (!message) return;
         if (!currentUser) {
-          appendMessage('ai', 'Sign in with Google before using Ask AI.');
+          appendMessage('ai', 'Sign in with Google first.');
           return;
         }
         appendMessage('user', message);
@@ -188,10 +188,10 @@
           });
           const contentType = response.headers.get('content-type') || '';
           if (!contentType.includes('application/json')) {
-            throw new Error('Ask AI is not live yet. Please try again after the site is updated.');
+            throw new Error('AI is not live yet. Try again later.');
           }
           const payload = await response.json();
-          if (!response.ok || !payload.ok) throw new Error(payload.error || 'Ask AI is not available yet.');
+          if (!response.ok || !payload.ok) throw new Error(payload.error || 'AI is not ready yet.');
           loadingBubble.classList.remove('loading');
           loadingBubble.textContent = payload.answer;
           saveMessage('ai', payload.answer);
