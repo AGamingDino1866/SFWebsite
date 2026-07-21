@@ -228,11 +228,14 @@ applicationsList.addEventListener("click", async (event) => {
   const deleteButton = event.target.closest("[data-delete-application]");
   if (!deleteButton) return;
   const student = row.dataset.student || "this applicant";
-  if (!window.confirm(`Delete ${student}'s application (${applicationId})? This also removes their status lookup.`)) return;
+  if (!window.confirm(`Delete ${student}'s application (${applicationId})? This also removes their status lookup and submission record.`)) return;
   deleteButton.disabled = true;
   deleteButton.textContent = "Deleting...";
   await deleteDoc(doc(db, "applications", applicationId));
   await deleteDoc(doc(db, "application_status", applicationId));
+  if (record && record.uid) {
+    await deleteDoc(doc(db, "application_submissions", record.uid));
+  }
   allApplications = allApplications.filter((item) => item.application_id !== applicationId);
   updateCityFilter(allApplications);
   renderApplications();
