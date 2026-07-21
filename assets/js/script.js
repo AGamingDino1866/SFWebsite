@@ -83,6 +83,7 @@ const setupNavigation = () => {
       ["eligibility.html", "Eligibility"],
       ["ask-ai.html", "Ask AI"],
       ["status.html", "Status"],
+      ["faq.html", "FAQ"],
       ["auth.html", "Sign In"],
       ["contact.html", "Contact Us"]
     ];
