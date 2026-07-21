@@ -33,7 +33,7 @@ JAMstack scholarship portal: Vanilla HTML/CSS/JS frontend, Firestore backend, Gr
 - Static assets: CF cache headers (default 30 days)
 - Firebase SDK: CDN-cached (gstatic.com)
 - Firestore docs: Client-side SDK cache + browser storage
-- 
+
 ## File Structure
 
 ```
