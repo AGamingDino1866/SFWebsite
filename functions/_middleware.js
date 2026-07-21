@@ -1,4 +1,4 @@
-const GEO_BLOCK_ENABLED = true;
+const GEO_BLOCK_ENABLED = false;
 const COUNTRY_ALLOWLIST = new Set(["PK"]);
 const PUBLIC_PATHS = new Set(["/deny.html", "/favicon.svg"]);
 
