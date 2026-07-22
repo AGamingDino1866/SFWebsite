@@ -87,7 +87,14 @@ export async function onRequestPost(context) {
   if (!elevenResponse.ok) {
     const errText = await elevenResponse.text().catch(() => "");
     console.error("ElevenLabs error:", elevenResponse.status, errText);
-    return json({ ok: false, error: "Could not generate audio right now." }, 502);
+    let detail = errText;
+    try {
+      const parsed = JSON.parse(errText);
+      detail = parsed.detail?.message || parsed.detail?.status || parsed.detail || errText;
+    } catch {
+      // errText wasn't JSON, use as-is
+    }
+    return json({ ok: false, error: `ElevenLabs ${elevenResponse.status}: ${String(detail).slice(0, 300)}` }, 502);
   }
 
   return new Response(elevenResponse.body, {
