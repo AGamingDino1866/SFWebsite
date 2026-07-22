@@ -21,6 +21,7 @@ Violating this breaks the deployment CI/CD pipeline.
 - **Serverless:** Cloudflare Pages Functions (Node.js runtime, `functions/api/*.js`)
 - **LLM:** Groq API (LLama 3.1 8B Instant, T=0.2, max_tokens=450)
 - **Build:** None (vanilla static site, instant deployment)
+- **PWA:** `manifest.json` + `sw.js` (app-shell cache, offline fallback) - installable on desktop/mobile, registered from `assets/js/script.js`
 
 ### Database Schema
 
@@ -302,6 +303,19 @@ x-firebase-token: <JWT from Firebase Auth>   (optional - unlocks unlimited daily
 - Copy deployment URL to `functions/api/send-confirmation.js` line 1
 - Create Gmail trigger manually: Function: `handleIncomingEmail`, Event: "On receive"
 - Both functions handle errors gracefully (don't crash)
+
+## Progressive Web App
+
+**Files:**
+- `manifest.json` (project root) - name, icons, `theme_color: #2c2c85`, `display: standalone`, `start_url: /index.html`
+- `sw.js` (project root) - service worker; precaches the app shell (main HTML pages, `styles.css`, `script.js`, `read-aloud.js`, `ui.js`, icons) on install, network-first for page navigations with cache fallback (so offline visits still load something), cache-first for static assets, bumps `CACHE_NAME` to invalidate old caches
+- `assets/icons/` - `icon-192.png`, `icon-512.png` (any + maskable purposes), `apple-touch-icon.png` (180x180), generated from `favicon.svg` with white padding for the maskable safe zone
+- Registered from `assets/js/script.js` on `window load`, guarded by `"serviceWorker" in navigator`
+- `<link rel="manifest">`, `<meta name="theme-color">`, and `<link rel="apple-touch-icon">` are on every page's `<head>`, right after the favicon link
+
+**Updating the icon:** regenerate from `favicon.svg` with ImageMagick, e.g. `convert -background white -density 400 favicon.svg -resize 380x380 -gravity center -extent 512x512 -background white -alpha remove -alpha off assets/icons/icon-512.png` (adjust the `-resize`/`-extent` pair per target size, keeping ~25% padding for the maskable safe zone).
+
+**Updating cached files:** bump `CACHE_NAME` in `sw.js` (e.g. `sahulat-family-v2`) whenever `PRECACHE_URLS` changes or a precached file's content changes meaningfully - the old cache is deleted on activate.
 
 ## Admin Dashboard
 
