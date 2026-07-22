@@ -233,6 +233,35 @@ ipUsage.set(key, current + 1);
 }
 ```
 
+### POST `/api/tts`
+
+**Purpose:** Powers the site-wide read-aloud button (`assets/js/read-aloud.js`) and the apply.html question/answer read-aloud controls. Proxies text to ElevenLabs so the API key never reaches the browser.
+
+**Headers:**
+```
+Content-Type: application/json
+x-firebase-token: <JWT from Firebase Auth>   (optional - unlocks unlimited use for the admin email)
+```
+
+**Request:**
+```json
+{ "text": "Text to read aloud" }
+```
+
+**Response (200):** raw `audio/mpeg` body (played directly via an `Audio` object on the client - no JSON wrapper).
+
+**Errors (JSON body):**
+- `400 Bad Request`: Missing/empty `text`
+- `429 Too Many Requests`: Daily per-IP character budget exceeded (20,000 chars/day, admin email exempt)
+- `500 Internal Server Error`: `ELEVENLABS_API_KEY` not configured
+- `502 Bad Gateway`: ElevenLabs API error
+
+**Config:**
+- `env.ELEVENLABS_API_KEY` (Cloudflare Pages environment secret, required)
+- `env.ELEVENLABS_VOICE_ID` (optional, defaults to `21m00Tcm4TlvDq8ikWAM` - "Rachel", a natural feminine voice)
+- `env.ELEVENLABS_MODEL` (optional, defaults to `eleven_turbo_v2_5`)
+- Requests over 4000 characters are truncated to the nearest word boundary before being sent to ElevenLabs, to bound cost on long page reads.
+
 ### POST `/api/send-confirmation`
 
 **Internal function** (called during form submission, non-blocking).
@@ -484,6 +513,7 @@ Edit `eligibility.html` directly (static content, no code changes needed):
 | Endpoint | Method | Auth | Rate Limit | Purpose |
 |----------|--------|------|-----------|---------|
 | `/api/ask-ai` | POST | Required (JWT) | 150/day per IP | Groq LLM chat |
+| `/api/tts` | POST | None (JWT unlocks unlimited for admin) | 20,000 chars/day per IP | ElevenLabs read-aloud |
 | `/api/send-confirmation` | POST | Internal | None | Email handler |
 
 ## Known Limitations
@@ -493,3 +523,4 @@ Edit `eligibility.html` directly (static content, no code changes needed):
 3. **Firebase config in HTML** - API key visible in source (not a secret, scoped to Firestore)
 5. **Eventual consistency** - Status updates may lag behind application writes (~few seconds)
 6. **No offline support** - Requires active internet connection for Firestore operations
+7. **ElevenLabs quota shared across all visitors** - `/api/tts`'s per-IP daily character budget doesn't cap total site-wide usage against your ElevenLabs plan quota; a free-tier ElevenLabs account (~10k chars/month) can be exhausted quickly under real traffic
