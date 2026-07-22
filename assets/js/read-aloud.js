@@ -3,8 +3,8 @@ const speakText = (text) => {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.95;
-  utterance.pitch = 1;
+  utterance.rate = 0.9;
+  utterance.pitch = 0.8;
   speechSynthesis.speak(utterance);
 };
 

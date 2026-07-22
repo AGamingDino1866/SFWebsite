@@ -66,36 +66,7 @@
         try {
           const snapshot = await getDoc(doc(db, 'application_status', applicationId));
           if (!snapshot.exists()) {
-            show(`<h2>ID Not Found</h2><p class="result-message">We could not find application ID <strong>${escapeHtml(applicationId)}</strong> in our system. Check the spelling carefully (IDs start with SF2026 or SC2026).</p><h3>What should you do?</h3><ul style="margin-left:20px;line-height:1.8;"><li>Check your confirmation email for the correct ID</li><li>Try your ID again (it's case-sensitive)</li><li>If you lost your ID, we can send it to your email</li></ul><form class="not-found-form" id="resend-form"><label>Your email address<input type="email" required placeholder="you@example.com" /></label><button class="button" type="submit">Send me my Application ID</button><p id="resend-message"></p></form>`);
-
-            const resendForm = document.getElementById('resend-form');
-            resendForm.addEventListener('submit', async (e) => {
-              e.preventDefault();
-              const email = resendForm.querySelector('input[type="email"]').value;
-              const message = document.getElementById('resend-message');
-              message.textContent = 'Sending...';
-              message.classList.remove('success-msg');
-
-              try {
-                const response = await fetch('/api/resend-application-id', {
-                  method: 'POST',
-                  headers: { 'content-type': 'application/json' },
-                  body: JSON.stringify({ email, attempted_id: applicationId })
-                });
-                const result = await response.json();
-                if (response.ok && result.ok) {
-                  message.textContent = '✓ Check your email for your Application ID';
-                  message.className = 'success-msg';
-                  resendForm.style.display = 'none';
-                } else {
-                  message.textContent = result.error || 'Could not send email. Try contacting us directly.';
-                  message.className = 'error';
-                }
-              } catch (err) {
-                message.textContent = 'Could not send email. Email us at sahulatfamilypk@gmail.com with your details.';
-                message.className = 'error';
-              }
-            });
+            show(`<h2>ID Not Found</h2><p class="result-message">We could not find application ID <strong>${escapeHtml(applicationId)}</strong> in our system. Check the spelling carefully (IDs start with SF2026 or SC2026).</p><h3>What should you do?</h3><ul style="margin-left:20px;line-height:1.8;"><li>Check your confirmation email for the correct ID</li><li>Try your ID again (it's case-sensitive)</li><li>Contact us for assistance</li></ul>`);
             return;
           }
           const record = snapshot.data();
