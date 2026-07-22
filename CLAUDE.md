@@ -98,26 +98,28 @@ sahulatafamilytrust.pages.dev
 
 **Structure:**
 - One question per screen for progressive disclosure
-- Progress bar shows "Question X of 14"
+- Progress bar shows "Question X of 15"
 - Back/Next buttons for navigation
 - Auto-save to localStorage with draft recovery
 - Duplicate detection via `sahulat-submitted:{uid}` marker
+- Per-field validation beyond required/empty checks (`fieldValidators` in apply.html): sibling count must be an integer 0-20, school name must be 3-100 chars and contain a letter, phone number (if provided) must match a Pakistani mobile pattern. This blocks obviously-fake input (e.g. "1200" siblings, a phone number that's just repeated digits) but cannot verify real-world truth (e.g. that a named school genuinely exists) - that still relies on the admin's manual review in the admin dashboard.
 
 **Questions (in order):**
 1. Full name (text)
 2. City (select: Karachi, Lahore, Islamabad, Rawalpindi, Other)
-3. Grade/Year (text: e.g., "Class 10", "BA Year 2")
-4. School/College name (text)
+3. Grade/Year (select: Nursery/KG through Class 10, Matric, O/A Level, Intermediate/FSc Part 1-2, BA/BSc Year 1-4, MA/MSc Year 1-2, Other) - a fixed dropdown rather than free text, so it can't be filled with nonsensical values
+4. School/College name (text, 3-100 chars, must contain a letter)
 5. Mother's name (optional text)
 6. Father's employment status (select)
-7. Number of siblings (number)
+7. Number of siblings (number, validated 0-20)
 8. Family has university degree? (radio: Yes/No)
 9. Has disability or chronic health? (radio: Yes/No)
-10. Reliable internet access? (select: Yes, Sometimes, No)
+10. Reliable internet access? (select: Yes/reliable, Sometimes unreliable, No access - "No access" is intentionally kept: many applicants qualify for need-based aid precisely because they lack home internet and are applying from a library/school/borrowed device)
 11. Financial need (textarea, 0-1000 chars)
 12. Career goals (textarea, 0-1000 chars)
 13. Why deserve scholarship? (textarea, 0-800 chars)
-14. Preferred contact method (select: WhatsApp, Email, Phone, SMS)
+14. Phone number (optional text, validated against a Pakistani mobile number pattern if provided)
+15. Preferred contact method (select: WhatsApp, Email, Phone, SMS)
 
 **Accessibility Features:**
 - Proper semantic HTML with `<fieldset>`, `<legend>`, `<label for="id">`
@@ -132,8 +134,7 @@ sahulatafamilytrust.pages.dev
 **Read-Aloud Features:**
 - 🔊 button reads current question (with question number and hints)
 - 🔊 "Read my answer" button for textarea fields (review before next)
-- Uses Web Speech API (SpeechSynthesis) for instant audio
-- Works in Chrome, Safari, Edge, Firefox
+- Uses the site's `/api/tts` endpoint (Cloudflare Workers AI) via the shared `speakText` from `assets/js/read-aloud.js`
 - Click to start/stop, Escape to cancel
 
 ### Accessibility on All Pages
@@ -162,6 +163,8 @@ Security rules configured in Firebase Console (not versioned in git). Key constr
 - Users: create-only on `/applications` (cannot read others' apps)
 - `/application_status`: public read (no auth required)
 - `/application_submissions`: write-only during app submission (dedup check)
+
+**Note:** apply.html's `fieldValidators` (sibling count range, phone number format, etc.) only run in the browser - a user who bypasses the UI and writes to the Firestore REST API directly skips them entirely. For validation that can't be bypassed, add matching `request.resource.data.*` constraints to the Firestore rules for `/applications` in Firebase Console, e.g. `request.resource.data.sibling_count is int && request.resource.data.sibling_count >= 0 && request.resource.data.sibling_count <= 20`.
 
 ## Cloudflare Pages Functions
 
