@@ -160,8 +160,16 @@ const setupNavigation = () => {
   if (!navToggle || !navLinks) return;
 
   navToggle.addEventListener("click", () => {
-    const isOpen = document.body.classList.toggle("nav-open");
-    navToggle.setAttribute("aria-expanded", String(isOpen));
+    document.body.classList.toggle("nav-open");
+    navToggle.setAttribute("aria-expanded", document.body.classList.contains("nav-open"));
+  });
+
+  // Close menu when clicking a link
+  navArray.forEach(link => {
+    link.addEventListener("click", () => {
+      document.body.classList.remove("nav-open");
+      navToggle.setAttribute("aria-expanded", "false");
+    });
   });
 };
 
