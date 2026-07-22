@@ -2,97 +2,76 @@
 class TranslationManager {
   constructor() {
     this.currentLang = localStorage.getItem('preferred-language') || 'en';
-    this.translationCache = new Map();
     this.isTranslating = false;
   }
 
-  async translateText(text, targetLang) {
-    if (targetLang === 'en' || !text || !text.trim()) return text;
-
-    const cacheKey = `${text.substring(0, 50)}|${targetLang}`;
-    if (this.translationCache.has(cacheKey)) {
-      return this.translationCache.get(cacheKey);
-    }
+  async translateText(text) {
+    if (!text || !text.trim()) return text;
 
     try {
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text.trim(), targetLang }),
-      });
-
+      const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.trim())}&langpair=en|ur`);
+      if (!response.ok) throw new Error('API error');
       const data = await response.json();
-      if (data.ok) {
-        this.translationCache.set(cacheKey, data.translatedText);
-        return data.translatedText;
+      if (data.responseStatus === 200 && data.responseData?.translatedText) {
+        return data.responseData.translatedText;
       }
     } catch (error) {
       console.error('Translation error:', error);
     }
-
     return text;
   }
 
   async translatePage(lang) {
-    if (this.isTranslating) return;
+    if (this.isTranslating || lang !== 'ur') return;
     this.isTranslating = true;
 
     try {
-      // Get all text nodes from the main content
       const mainContent = document.querySelector('main') || document.body;
       const textNodes = [];
-
-      const walker = document.createTreeWalker(
-        mainContent,
-        NodeFilter.SHOW_TEXT,
-        null
-      );
+      const walker = document.createTreeWalker(mainContent, NodeFilter.SHOW_TEXT, null);
 
       let node;
       while ((node = walker.nextNode())) {
         const text = node.nodeValue.trim();
-        if (text.length > 0 && text.length < 500) {
+        if (text.length > 0 && text.length < 300 && !node.parentElement?.hasAttribute('data-no-translate')) {
           textNodes.push(node);
         }
       }
 
-      console.log(`Found ${textNodes.length} text nodes to translate`);
+      console.log(`Translating ${textNodes.length} text nodes to Urdu`);
 
-      // Translate each node
       for (const textNode of textNodes) {
         try {
-          const originalText = textNode.nodeValue;
-          const translated = await this.translateText(originalText, lang);
-          if (translated && translated !== originalText) {
+          const original = textNode.nodeValue.trim();
+          const translated = await this.translateText(original);
+          if (translated && translated !== original) {
             textNode.nodeValue = translated;
           }
         } catch (e) {
-          console.error('Error translating node:', e);
+          console.error('Node translation failed:', e);
         }
       }
 
-      // Translate aria-labels and titles
+      // Translate labels and titles
       const elements = document.querySelectorAll('[aria-label], [title]');
       for (const el of elements) {
         try {
           if (el.getAttribute('aria-label')) {
-            const ariaLabel = el.getAttribute('aria-label');
-            const translated = await this.translateText(ariaLabel, lang);
+            const translated = await this.translateText(el.getAttribute('aria-label'));
             if (translated) el.setAttribute('aria-label', translated);
           }
           if (el.getAttribute('title')) {
-            const title = el.getAttribute('title');
-            const translated = await this.translateText(title, lang);
+            const translated = await this.translateText(el.getAttribute('title'));
             if (translated) el.setAttribute('title', translated);
           }
         } catch (e) {
-          console.error('Error translating element attributes:', e);
+          console.error('Attribute translation failed:', e);
         }
       }
 
-      console.log('Translation complete');
+      console.log('Urdu translation complete');
     } catch (error) {
-      console.error('translatePage error:', error);
+      console.error('Translation error:', error);
     } finally {
       this.isTranslating = false;
     }
@@ -101,7 +80,7 @@ class TranslationManager {
   setLanguage(lang) {
     this.currentLang = lang;
     localStorage.setItem('preferred-language', lang);
-    console.log(`Switching to language: ${lang}`);
+    console.log(`Language changed to: ${lang}`);
 
     if (lang === 'en') {
       location.reload();
