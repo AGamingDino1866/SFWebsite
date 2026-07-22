@@ -59,7 +59,7 @@ const injectMobileNavFix = () => {
   const style = document.createElement("style");
   style.dataset.mobileNavFix = "true";
   style.textContent = `
-    .nav-links{position:relative!important}.nav-slider{position:absolute!important;bottom:-8px!important;height:32px!important;background:#2c2c85!important;border-radius:8px!important;transition:left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)!important;z-index:-1!important}.nav-links a{position:relative!important;color:#2c2c85!important;text-decoration:none!important;padding:8px 16px!important;display:inline-block!important;border-radius:8px!important;transition:color 0.4s ease!important}.nav-links a.active{color:white!important;font-weight:600!important}
+    .nav-links{position:relative!important}.nav-slider{position:absolute!important;bottom:-8px!important;height:32px!important;background:#2c2c85!important;border-radius:8px!important;z-index:-1!important}.nav-links a{position:relative!important;color:#2c2c85!important;text-decoration:none!important;padding:8px 16px!important;display:inline-block!important;border-radius:8px!important}.nav-links a.active{color:white!important;font-weight:600!important}
     .hero-wrap > .hero-card h1{font-size:clamp(2rem,4.7vw,4.7rem)!important;line-height:1!important}
     .centered-nav{position:relative!important;justify-content:center!important}.centered-nav .logo-only{position:absolute!important;left:50px!important;top:50%!important;transform:translateY(-50%)!important}.centered-nav .nav-links{display:flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;white-space:nowrap!important}
     @media (max-width: 920px) {
