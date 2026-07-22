@@ -40,7 +40,7 @@ const injectNavyTheme = () => {
   style.dataset.navyTheme = "true";
   style.textContent = `
     :root{--ink:#2c2c85!important;--muted:#565680!important;--green:#2c2c85!important;--green-2:#4545a3!important;--rose:#2c2c85!important;--rose-dark:#2c2c85!important;--gold:#2c2c85!important;--sky:#2c2c85!important;--blush:#ffffff!important;--cream:#ffffff!important;--paper:#ffffff!important;--card:#ffffff!important;--line:rgba(44,44,133,.16)!important;--shadow:0 24px 70px rgba(44,44,133,.14)!important;--soft-shadow:0 16px 40px rgba(44,44,133,.1)!important}
-    body,.centered-header,.site-header,.auth-box,.result-grid div,.receipt-note,.note-band:not(.force-navy){background:#ffffff!important;color:#2c2c85!important}
+    html{background:#ffffff!important}body,.centered-header,.site-header,.auth-box,.result-grid div,.receipt-note,.note-band:not(.force-navy){background:#ffffff!important;color:#2c2c85!important}
     .soft-band{background:#ffffff!important;color:#2c2c85!important}
     .button.primary,.button:not(.secondary):not(.light),.nav-links a.active,.nav-links a:hover,.scholarship-card.featured,.cta-panel,.note-band,.step span,.google-dot,.chat-row.user .bubble{background:#2c2c85!important;color:#ffffff!important}
     .brand-mark{display:block!important;overflow:hidden!important;border-radius:50%!important;background:#ffffff url("favicon.svg") center/cover no-repeat!important;color:transparent!important;text-indent:-999px!important;box-shadow:0 10px 24px rgba(44,44,133,.16)!important}
@@ -50,7 +50,7 @@ const injectNavyTheme = () => {
     .eyebrow{color:#2c2c85!important}.hero-card .eyebrow{color:#ffffff!important}
     .surface-card p,.feature-card p,.university-card p,.portal-card p,.scholarship-card p,.scholarship-card li,.tip-card p,.lookup-form small,.result-message,.receipt-note,.contact-card p,.auth-panel p,.criteria-card p,.docs-card p,.income-card p{color:#565680!important}
   `;
-  document.head.appendChild(style);
+  document.head.insertBefore(style, document.head.firstChild);
 };
 
 const injectMobileNavFix = () => {
