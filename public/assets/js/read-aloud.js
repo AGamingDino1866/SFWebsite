@@ -3,12 +3,15 @@ const speakText = (text) => {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 0.9;
-  utterance.pitch = 1.3;
+  utterance.rate = 1.0;
+  utterance.pitch = 1.1;
 
-  // Try to select a female voice
+  // Select professional female voice
   const voices = speechSynthesis.getVoices();
-  const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.name.includes('female'));
+  const femaleVoice = voices.find(voice => {
+    const name = voice.name.toLowerCase();
+    return name.includes('female') || name.includes('woman') || name.includes('samantha') || name.includes('victoria');
+  });
   if (femaleVoice) utterance.voice = femaleVoice;
 
   speechSynthesis.speak(utterance);
