@@ -2,7 +2,7 @@
 
 JAMstack scholarship portal: Vanilla HTML/CSS/JS frontend, Firestore backend, Groq LLM middleware, Cloudflare Pages deployment.
 
-**Production:** https://sahulatafamilytrust.pages.dev
+**Production:** https://sahulatfamilytrust.pages.dev
 
 ## Stack & Dependencies
 
