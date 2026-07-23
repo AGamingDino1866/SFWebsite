@@ -34,8 +34,9 @@ JAMstack scholarship portal: Vanilla HTML/CSS/JS frontend, Firestore backend, Gr
 ## File Structure
 
 ```
+public/
 ├── index.html              # Homepage + mission + stats + HowItWorks flow
-├── apply.html              # Step-by-step questionnaire (14 questions), Firebase writes, duplicate check, read-aloud buttons
+├── apply.html              # Step-by-step questionnaire (15 questions), Firebase writes, duplicate check, read-aloud buttons
 ├── eligibility.html        # Criteria breakdown (40% income, 15% family size, etc)
 ├── ask-ai.html             # Chat UI, Groq integration, rate limit display, read-aloud button
 ├── status.html             # Public status lookup, printable receipt, read-aloud button
@@ -43,19 +44,28 @@ JAMstack scholarship portal: Vanilla HTML/CSS/JS frontend, Firestore backend, Gr
 ├── contact.html            # Support info, email link, read-aloud button
 ├── admin.html              # Compact application dashboard with expandable cards, status editor, read-aloud button
 ├── faq.html                # Frequently asked questions, read-aloud button
-├── test.html               # Testing page
-├── _routes.json            # CF Pages routing config
+├── test.html               # Testing/diagnostics page
+├── manifest.json           # PWA manifest (icons, theme color, standalone display)
+├── sw.js                   # Service worker: app-shell precache + offline fallback
+├── robots.txt              # Search engine crawl rules
+├── sitemap.xml             # Search engine sitemap
+├── _routes.json            # CF Pages Functions routing config (routes /api/* only)
 ├── assets/
 │   ├── css/styles.css      # Global styles, CSS custom properties
+│   ├── icons/              # PWA icons (192/512 + apple-touch-icon), generated from favicon.svg
 │   ├── js/
-│   │   ├── script.js       # Nav toggle
+│   │   ├── script.js       # Nav setup, mobile menu, navy theme injection, SW registration
 │   │   ├── admin.js        # Firestore CRUD for applications, status updates, message customization
-│   │   └── read-aloud.js   # Global text-to-speech button on all pages using Web Speech API
-│   └── *.{png,jpg}         # Hero images
-├── functions/api/
-│   ├── ask-ai.js           # Groq API wrapper, rate limiting (150/day per IP)
-│   └── send-confirmation.js # Student confirmation + admin notification emails via Google Apps Script
-└── CLAUDE.md               # Implementation reference
+│   │   ├── read-aloud.js   # Global text-to-speech button on all pages, via /api/tts
+│   │   └── ui.js           # Unused stub (dark mode removed)
+│   └── *.{png,webp,svg}    # Hero images, favicon
+├── functions/
+│   ├── _middleware.js      # Pages Functions middleware (pass-through)
+│   └── api/
+│       ├── ask-ai.js       # Groq API wrapper, rate limiting (150/day per IP)
+│       ├── tts.js          # Cloudflare Workers AI text-to-speech proxy
+│       └── send-confirmation.js # Student confirmation + admin notification emails via Google Apps Script
+└── CLAUDE.md               # Implementation reference (repo root)
 ```
 
 ## Application Form Features
